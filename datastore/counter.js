@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const sprintf = require('sprintf-js').sprintf;
+const fs = require("fs");
+const path = require("path");
+const sprintf = require("sprintf-js").sprintf;
 
-var counter = 0;
+var counter;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -11,11 +11,11 @@ var counter = 0;
 // Wikipedia entry on Leading Zeros and check out some of code links:
 // https://www.google.com/search?q=what+is+a+zero+padded+number%3F
 
-const zeroPaddedNumber = (num) => {
-  return sprintf('%05d', num);
+const zeroPaddedNumber = num => {
+  return sprintf("%05d", num);
 };
 
-const readCounter = (callback) => {
+const readCounter = callback => {
   fs.readFile(exports.counterFile, (err, fileData) => {
     if (err) {
       callback(null, 0);
@@ -27,9 +27,9 @@ const readCounter = (callback) => {
 
 const writeCounter = (count, callback) => {
   var counterString = zeroPaddedNumber(count);
-  fs.writeFile(exports.counterFile, counterString, (err) => {
+  fs.writeFile(exports.counterFile, counterString, err => {
     if (err) {
-      throw ('error writing counter');
+      throw "error writing counter";
     } else {
       callback(null, counterString);
     }
@@ -37,14 +37,23 @@ const writeCounter = (count, callback) => {
 };
 
 // Public API - Fix this function //////////////////////////////////////////////
+// grab unique Id for each new item
+exports.getNextUniqueId = cb => {
+  readCounter((err, retrievedCount) => {
+    if (!err) {
+      count = retrievedCount + 1;
+      writeCounter(count, (err, counterString) => {
+        if (!err) {
+          cb(null, counterString);
+        }
+      });
+    }
+  });
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+  // counter = counter + 1;
+  // return zeroPaddedNumber(counter);
 };
-
-
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
 
-exports.counterFile = path.join(__dirname, 'counter.txt');
+exports.counterFile = path.join(__dirname, "counter.txt");
